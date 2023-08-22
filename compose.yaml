@@ -1,0 +1,19 @@
+version: "3.9"
+services:
+  dlstreamer:
+    env_file: .env
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: tec/dlstreamer:devel
+    privileged: true
+    network_mode: host
+    working_dir: /home/dlstreamer
+    command: /home/dlstreamer/.local/bin/jupyter-lab --no-browser
+    devices:
+      - /dev/dri:/dev/dri
+    volumes:
+      - ~/.Xauthority:/home/dlstreamer/.Xauthority
+      - /tmp/.X11-unix:/tmp/.X11-unix
+      - /dev/bus/usb:/dev/bus/usb
+      - .:/home/dlstreamer/dlstreamer_notebooks:rw
