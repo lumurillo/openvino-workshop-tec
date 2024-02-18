@@ -4,20 +4,9 @@ from IPython.display import display, Image
 import ipywidgets as widgets
 import threading
 
-# Stop button
-# ================
-stopButton = widgets.ToggleButton(
-    value=False,
-    description='Stop',
-    disabled=False,
-    button_style='danger', # 'success', 'info', 'warning', 'danger' or ''
-    tooltip='Description',
-    icon='square' # (FontAwesome names without the `fa-` prefix)
-)
 
 # Display function
-# ================
-def view(pipeline):
+def view(pipeline, stopButton):
     cap = cv2.VideoCapture(pipeline, cv2.CAP_GSTREAMER)
     if not cap.isOpened():
         raise Exception("Error: Could not open GStreamer pipeline.")
@@ -36,10 +25,22 @@ def view(pipeline):
         if stopButton.value==True:
             cap.release()
             display_handle.update(None)
+            break
 
 def gst_launch(pipeline_str):
+    # Stop button
+    stopButton = widgets.ToggleButton(
+        value=False,
+        description='Stop',
+        disabled=False,
+        button_style='danger', # 'success', 'info', 'warning', 'danger' or ''
+        tooltip='Description',
+        icon='square' # (FontAwesome names without the `fa-` prefix)
+    )
     display(stopButton)
-    thread = threading.Thread(target=view, args=(pipeline_str,))
+
+    # Run the video in a different thread
+    thread = threading.Thread(target=view, args=(pipeline_str, stopButton,))
     thread.start()
 
     return thread
