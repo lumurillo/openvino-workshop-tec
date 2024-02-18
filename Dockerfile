@@ -1,4 +1,4 @@
-ARG OS_VER="devel"
+ARG OS_VER="2023.0.0-ubuntu22-gpu682-dpcpp-devel"
 FROM intel/dlstreamer:${OS_VER}
 
 USER root
@@ -44,7 +44,7 @@ RUN mkdir models && cd models && \
     omz_downloader --name landmarks-regression-retail-0009 --precisions FP32
 
 # Clone OpenVINO notebooks
-RUN git clone -b 2022.3 --depth 1 https://github.com/openvinotoolkit/openvino_notebooks.git && \
+RUN git clone -b 2023.0 --depth 1 https://github.com/openvinotoolkit/openvino_notebooks.git && \
     cd openvino_notebooks && \
     sed '/opencv-python/d' requirements.txt > requirements.txt && \
     pip install -r requirements.txt
