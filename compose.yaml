@@ -1,15 +1,15 @@
-version: "3.9"
 services:
   dlstreamer:
-    env_file: .env
     build:
       context: .
       dockerfile: Dockerfile
     image: tec/dlstreamer:devel
+    ports:
+      - "8888:8888"
     privileged: true
     network_mode: host
     working_dir: /home/dlstreamer
-    command: /home/dlstreamer/.local/bin/jupyter-lab --no-browser
+    command: /home/dlstreamer/.local/bin/jupyter-lab --no-browser --ip=0.0.0.0 --port=8888 --allow-root
     devices:
       - /dev/dri:/dev/dri
     volumes:
