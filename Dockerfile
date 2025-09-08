@@ -1,7 +1,17 @@
 ARG OS_VER="2023.0.0-ubuntu22-gpu682-dpcpp-devel"
 FROM intel/dlstreamer:${OS_VER}
 
+# Pass host UID/GID as build args
+ARG HOST_UID=1000
+ARG HOST_GID=1000
+
 USER root
+
+# Remove the existing dlstreamer user and recreate it
+RUN userdel -r dlstreamer && \
+    groupadd -g ${HOST_GID} dlstreamer && \
+    useradd -m -u ${HOST_UID} -g ${HOST_GID} dlstreamer && \
+    chown -R ${HOST_UID}:${HOST_GID} /home/dlstreamer
 
 # Install system dependencies
 RUN apt-get update; \
@@ -23,6 +33,7 @@ RUN git clone https://github.com/opencv/opencv.git && \
     make -j$(nproc) && \
     make install
 
+WORKDIR /home/dlstreamer
 USER dlstreamer
 
 # Install additional python dependencies
@@ -44,7 +55,12 @@ RUN mkdir models && cd models && \
     omz_downloader --name landmarks-regression-retail-0009 --precisions FP32
 
 # Clone OpenVINO notebooks
-RUN git clone -b 2025.0 --depth 1 https://github.com/openvinotoolkit/openvino_notebooks.git && \
+RUN git clone -b 2023.0 --depth 1 https://github.com/openvinotoolkit/openvino_notebooks.git && \
     cd openvino_notebooks && \
     sed '/opencv-python/d' requirements.txt > requirements.txt && \
     pip install -r requirements.txt
+
+# Copy custom notebooks and directories to the image
+COPY utils/ /home/dlstreamer/utils/
+COPY opencv_gst_example.ipynb /home/dlstreamer/
+COPY model_proc/ /home/dlstreamer/dlstreamer_notebooks/model_proc/
