@@ -8,7 +8,7 @@ This repo has the OpenVINO and Deep Learning Streamer Workshop materials. In thi
 
 ### Build the Docker image
 ```shell
-docker compose build dlstreamer
+docker compose build --build-arg HOST_UID=$(id -u) --build-arg HOST_GID=$(id -g) dlstreamer
 ```
 
 ### Start the dlstreamer service
